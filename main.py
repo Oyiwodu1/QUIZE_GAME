@@ -113,6 +113,48 @@ QUESTIONS = [
         "fact": "Two is the only even prime number.",
         "difficulty": "hard",
     },
+    {
+        "question": "What is the capital of Mongolia?",
+        "choices": ["Ulaanbaatar", "Astana", "Tashkent", "Bishkek"],
+        "answer": "Ulaanbaatar",
+        "fact": "Ulaanbaatar is the coldest capital city in the world.",
+        "difficulty": "hard",
+    },
+    {
+        "question": "Which element has the highest electrical conductivity at standard temperature and pressure?",
+        "choices": ["Gold", "Silver", "Copper", "Aluminum"],
+        "answer": "Silver",
+        "fact": "Silver is the most conductive element, followed by copper and gold.",
+        "difficulty": "hard",
+    },
+    {
+        "question": "What is the most abundant gas in Earth's atmosphere?",
+        "choices": ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"],
+        "answer": "Nitrogen",
+        "fact": "Nitrogen makes up about 78% of Earth's atmosphere.",
+        "difficulty": "hard",
+    },
+    {
+        "question": "Which planet has the most moons?",
+        "choices": ["Earth", "Mars", "Jupiter", "Saturn"],
+        "answer": "Saturn",
+        "fact": "As of now, Saturn has 82 confirmed moons, while Jupiter has 79.",
+        "difficulty": "hard",
+    },
+]
+
+
+STREAK_MESSAGES = {
+    2: "Double streak! 🔥",
+    3: "Three in a row — unstoppable! ⚡",
+    4: "Four-answer combo! 🌟",
+    5: "Perfect streak unlocked! 🏆",
+}
+
+FUN_CHALLENGES = [
+    "Bonus challenge: Say the answer with dramatic movie-trailer energy!",
+    "Bonus challenge: Explain the answer in five words!",
+    "Bonus challenge: Strike a victory pose before continuing!",
 ]
 
 
@@ -160,6 +202,8 @@ def run_round(difficulty, starting_number=1):
     number_of_questions = min(5, len(pool))
     selected_questions = random.sample(pool, number_of_questions)
     score = 0
+    streak = 0
+    best_streak = 0
 
     print(f"\n{'=' * 40}")
     print(f"  {difficulty.upper()} ROUND  •  {number_of_questions} questions")
@@ -168,8 +212,18 @@ def run_round(difficulty, starting_number=1):
     for offset, item in enumerate(selected_questions):
         if ask_question(starting_number + offset, item):
             score += 1
+            streak += 1
+            best_streak = max(best_streak, streak)
+            if streak in STREAK_MESSAGES:
+                print(STREAK_MESSAGES[streak])
+            if streak == 3:
+                print(random.choice(FUN_CHALLENGES))
+        else:
+            streak = 0
 
     print(f"\n{difficulty.title()} round result: {score}/{number_of_questions}")
+    if best_streak >= 2:
+        print(f"🔥 Best answer streak: {best_streak}")
     return score, number_of_questions
 
 
@@ -248,7 +302,11 @@ if __name__ == "__main__":
     while True:
         play()
 
-        replay = input("\nWould you like to play again? (yes/no): ").strip().lower()
-        if replay not in {"yes", "y"}:
-            print("Thanks for playing! 👋")
-            break
+        while True:
+            replay = input("\nWould you like to play again? (yes/no): ").strip().lower()
+            if replay in {"yes", "y"}:
+                break
+            if replay in {"no", "n"}:
+                print("Thanks for playing! 👋")
+                raise SystemExit
+            print("Please answer 'yes' or 'no'.")
